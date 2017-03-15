@@ -44,7 +44,10 @@ target_metadata = model_base.BASEV2.metadata
 
 def set_mysql_engine():
     try:
-        mysql_engine = neutron_config.command.mysql_engine
+        if neutron_config.database.mysql_enable_ndb:
+            mysql_engine = 'NDBCLUSTER'
+        else:
+            mysql_engine = neutron_config.command.mysql_engine
     except cfg.NoSuchOptError:
         mysql_engine = None
 
@@ -103,7 +106,9 @@ def run_migrations_online():
     """
     set_mysql_engine()
     connection = config.attributes.get('connection')
-    with DBConnection(neutron_config.database.connection, connection) as conn:
+    with DBConnection(neutron_config.database.connection,
+                      neutron_config.database.mysql_enable_ndb,
+                      connection) as conn:
         context.configure(
             connection=conn,
             target_metadata=target_metadata,

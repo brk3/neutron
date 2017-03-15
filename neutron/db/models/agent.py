@@ -12,6 +12,10 @@
 
 from neutron_lib.db import constants as db_const
 from neutron_lib.db import model_base
+from oslo_db.sqlalchemy.types import String
+from sqlalchemy.dialects.mysql import TEXT
+from sqlalchemy.dialects.mysql import TINYTEXT
+
 import sqlalchemy as sa
 from sqlalchemy import sql
 
@@ -28,10 +32,10 @@ class Agent(model_base.BASEV2, model_base.HasId):
     )
 
     # L3 agent, DHCP agent, OVS agent, LinuxBridge
-    agent_type = sa.Column(sa.String(255), nullable=False)
-    binary = sa.Column(sa.String(255), nullable=False)
+    agent_type = sa.Column(String(255, mysql_ndb_length=128), nullable=False)
+    binary = sa.Column(String(255, mysql_ndb_type=TINYTEXT), nullable=False)
     # TOPIC is a fanout exchange topic
-    topic = sa.Column(sa.String(255), nullable=False)
+    topic = sa.Column(String(255), mysql_ndb_type=TINYTEXT, nullable=False)
     # TOPIC.host is a target topic
     host = sa.Column(sa.String(255), nullable=False)
     availability_zone = sa.Column(sa.String(255))
@@ -46,7 +50,8 @@ class Agent(model_base.BASEV2, model_base.HasId):
     # description is note for admin user
     description = sa.Column(sa.String(db_const.DESCRIPTION_FIELD_SIZE))
     # configurations: a json dict string, I think 4095 is enough
-    configurations = sa.Column(sa.String(4095), nullable=False)
+    configurations = sa.Column(String(4095, mysql_ndb_type=TEXT),
+                               nullable=False)
     # resource_versions: json dict, 8191 allows for ~256 resource versions
     #                    assuming ~32byte length "'name': 'ver',"
     #                    the whole row limit is 65535 bytes in mysql

@@ -25,6 +25,9 @@ revision = '313373c0ffee'
 down_revision = '52c5312f6baf'
 
 from alembic import op
+from oslo_db.sqlalchemy.types import String
+from sqlalchemy.dialects.mysql import TEXT
+
 import sqlalchemy as sa
 
 
@@ -47,7 +50,7 @@ def upgrade():
         sa.Column('driver', sa.String(1024), nullable=False),
         sa.Column('enabled', sa.Boolean, nullable=False,
                   server_default=sa.sql.true()),
-        sa.Column('metainfo', sa.String(4096)),
+        sa.Column('metainfo', String(4096, ndb_mysql_type=TEXT)),
         sa.PrimaryKeyConstraint('id')
     )
 

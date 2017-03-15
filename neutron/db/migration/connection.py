@@ -21,15 +21,18 @@ class DBConnection(object):
        This class is not thread safe.
     """
 
-    def __init__(self, connection_url, connection=None):
+    def __init__(self, sql_connection, mysql_enable_ndb, connection=None):
         self.connection = connection
-        self.connection_url = connection_url
+        self.sql_connection = sql_connection
+        self.mysql_enable_ndb = mysql_enable_ndb
         self.new_engine = False
 
     def __enter__(self):
         self.new_engine = self.connection is None
         if self.new_engine:
-            self.engine = session.create_engine(self.connection_url)
+            self.engine = session.create_engine(
+                sql_connection=self.sql_connection,
+                mysql_enable_ndb=self.mysql_enable_ndb)
             self.connection = self.engine.connect()
         return self.connection
 

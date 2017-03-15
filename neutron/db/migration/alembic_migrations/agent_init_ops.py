@@ -19,6 +19,10 @@
 
 
 from alembic import op
+from oslo_db.sqlalchemy.types import String
+from sqlalchemy.dialects.mysql import TEXT
+from sqlalchemy.dialects.mysql import TINYTEXT
+
 import sqlalchemy as sa
 
 
@@ -26,9 +30,12 @@ def upgrade():
     op.create_table(
         'agents',
         sa.Column('id', sa.String(length=36), nullable=False),
-        sa.Column('agent_type', sa.String(length=255), nullable=False),
-        sa.Column('binary', sa.String(length=255), nullable=False),
-        sa.Column('topic', sa.String(length=255), nullable=False),
+        sa.Column('agent_type', String(255, mysql_ndb_length=128),
+                  nullable=False),
+        sa.Column('binary', String(255, mysql_ndb_type=TINYTEXT),
+                  nullable=False),
+        sa.Column('topic', String(255, mysql_ndb_type=TINYTEXT),
+                  nullable=False),
         sa.Column('host', sa.String(length=255), nullable=False),
         sa.Column('admin_state_up', sa.Boolean(), nullable=False,
                   server_default=sa.sql.true()),
@@ -36,7 +43,8 @@ def upgrade():
         sa.Column('started_at', sa.DateTime(), nullable=False),
         sa.Column('heartbeat_timestamp', sa.DateTime(), nullable=False),
         sa.Column('description', sa.String(length=255), nullable=True),
-        sa.Column('configurations', sa.String(length=4095), nullable=False),
+        sa.Column('configurations', String(4095, mysql_ndb_type=TEXT),
+                  nullable=False),
         sa.Column('load', sa.Integer(), server_default='0', nullable=False),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('agent_type', 'host',

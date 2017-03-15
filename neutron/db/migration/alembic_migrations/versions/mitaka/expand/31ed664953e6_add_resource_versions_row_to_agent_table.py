@@ -26,9 +26,13 @@ revision = '31ed664953e6'
 down_revision = '15e43b934f81'
 
 from alembic import op
+from oslo_db.sqlalchemy.types import String
+from sqlalchemy.dialects.mysql import TEXT
+
 import sqlalchemy as sa
 
 
 def upgrade():
     op.add_column('agents',
-                  sa.Column('resource_versions', sa.String(length=8191)))
+                  sa.Column('resource_versions', String(8191,
+                            mysql_ndb_type=TEXT)))

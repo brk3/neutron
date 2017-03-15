@@ -12,6 +12,10 @@
 
 from neutron_lib.db import constants as db_const
 from neutron_lib.db import model_base
+
+from oslo_db.sqlalchemy.types import String
+from sqlalchemy.dialects.mysql import TEXT
+
 import sqlalchemy as sa
 from sqlalchemy import orm
 
@@ -32,7 +36,7 @@ class ServiceProfile(model_base.BASEV2, model_base.HasId):
     driver = sa.Column(sa.String(1024), nullable=False)
     enabled = sa.Column(sa.Boolean, nullable=False, default=True,
                         server_default=sa.sql.true())
-    metainfo = sa.Column(sa.String(4096))
+    metainfo = sa.Column(String(4096, mysql_ndb_type=TEXT))
     flavors = orm.relationship("FlavorServiceProfileBinding")
 
 

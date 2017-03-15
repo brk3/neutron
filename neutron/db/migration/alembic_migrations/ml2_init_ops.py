@@ -17,6 +17,9 @@
 
 
 from alembic import op
+from oslo_db.sqlalchemy.types import String
+from sqlalchemy.dialects.mysql import TEXT
+
 import sqlalchemy as sa
 
 
@@ -91,10 +94,10 @@ def upgrade():
         sa.Column('vif_type', sa.String(length=64), nullable=False),
         sa.Column('vnic_type', sa.String(length=64), nullable=False,
                   server_default='normal'),
-        sa.Column('profile', sa.String(length=4095), nullable=False,
-                  server_default=''),
-        sa.Column('vif_details', sa.String(length=4095), nullable=False,
-                  server_default=''),
+        sa.Column('profile', String(4095, mysql_ndb_type=TEXT),
+                  nullable=False),
+        sa.Column('vif_details', String(4095, mysql_ndb_type=TEXT),
+                  nullable=False),
         sa.ForeignKeyConstraint(['port_id'], ['ports.id'],
                                 ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('port_id'))

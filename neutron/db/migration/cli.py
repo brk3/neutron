@@ -87,6 +87,10 @@ _db_opts = [
                default='',
                help=_('Database engine for which script will be generated '
                       'when using offline migration.')),
+    cfg.BoolOpt('mysql_enable_ndb',
+                default=False,
+                help=_('If True, transparently enables support for handling '
+                       'MySQL Cluster (NDB).'))
 ]
 
 CONF = cfg.ConfigOpts()
@@ -405,7 +409,8 @@ def update_head_files(config):
 
 
 def _get_current_database_heads(config):
-    with DBConnection(config.neutron_config.database.connection) as conn:
+    with DBConnection(config.neutron_config.database.connection,
+                      config.neutron_config.database.mysql_enable_ndb) as conn:
         opts = {
             'version_table': get_alembic_version_table(config)
         }

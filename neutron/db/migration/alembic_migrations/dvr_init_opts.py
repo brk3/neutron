@@ -16,6 +16,9 @@
 # Initial operations for dvr
 
 from alembic import op
+from oslo_db.sqlalchemy.types import String
+from sqlalchemy.dialects.mysql import TEXT
+
 import sqlalchemy as sa
 
 
@@ -33,11 +36,11 @@ def upgrade():
         sa.Column('host', sa.String(length=255), nullable=False),
         sa.Column('router_id', sa.String(length=36), nullable=True),
         sa.Column('vif_type', sa.String(length=64), nullable=False),
-        sa.Column('vif_details', sa.String(length=4095),
+        sa.Column('vif_details', String(4095, mysql_ndb_type=TEXT),
                   nullable=False, server_default=''),
         sa.Column('vnic_type', sa.String(length=64),
                   nullable=False, server_default='normal'),
-        sa.Column('profile', sa.String(length=4095),
+        sa.Column('profile', String(4095, mysql_ndb_type=TEXT),
                   nullable=False, server_default=''),
         sa.Column(u'status', sa.String(16), nullable=False),
         sa.ForeignKeyConstraint(['port_id'], ['ports.id'],

@@ -26,6 +26,8 @@ revision = 'a9c43481023c'
 down_revision = '929c968efe70'
 
 from alembic import op
+from oslo_db.sqlalchemy import ndb
+from oslo_db.sqlalchemy import utils
 import sqlalchemy as sa
 from sqlalchemy.engine.reflection import Inspector as insp
 
@@ -47,16 +49,23 @@ def upgrade():
                   nullable=False,
                   server_default=constants.PORT_BINDING_STATUS_ACTIVE))
 
-    if (engine.name == MYSQL_ENGINE):
+    if (engine.name == MYSQL_ENGINE and
+            not ndb.ndb_status(engine)):
         op.execute("ALTER TABLE ml2_port_bindings DROP PRIMARY KEY,"
-                "ADD PRIMARY KEY(port_id, host);")
+                   "ADD PRIMARY KEY(port_id, host);")
     else:
         inspector = insp.from_engine(bind)
+        fk_name = utils.get_foreign_key_constraint_name(engine,
+                                                        'ml2_port_bindings',
+                                                        'port_id')
+        op.drop_constraint(fk_name, ML2_PORT_BINDING, type_='foreignkey')
         pk_constraint = inspector.get_pk_constraint(ML2_PORT_BINDING)
         op.drop_constraint(pk_constraint.get('name'), ML2_PORT_BINDING,
                            type_='primary')
         op.create_primary_key(op.f('pk_ml2_port_bindings'),
                               ML2_PORT_BINDING, ['port_id', 'host'])
+        op.create_foreign_key(fk_name, ML2_PORT_BINDING, 'ports', ["port_id"],
+                              ["id"], ondelete='CASCADE')
 
 
 def expand_drop_exceptions():

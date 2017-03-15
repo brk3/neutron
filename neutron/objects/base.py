@@ -436,7 +436,7 @@ class NeutronDbObject(NeutronObject):
             raise o_exc.NeutronPrimaryKeyMissing(object_class=cls.__name__,
                                                  missing_keys=missing_keys)
 
-        with context.session.begin(subtransactions=True):
+        with context.session.begin(subtransactions=True, nested=False):
             db_obj = obj_db_api.get_object(
                 context, cls.db_model,
                 **cls.modify_fields_to_db(kwargs)
@@ -460,7 +460,7 @@ class NeutronDbObject(NeutronObject):
         """
         if validate_filters:
             cls.validate_filters(**kwargs)
-        with context.session.begin(subtransactions=True):
+        with context.session.begin(subtransactions=True, nested=False):
             db_objs = obj_db_api.get_objects(
                 context, cls.db_model, _pager=_pager,
                 **cls.modify_fields_to_db(kwargs)
@@ -507,7 +507,7 @@ class NeutronDbObject(NeutronObject):
         """
         if validate_filters:
             cls.validate_filters(**kwargs)
-        with context.session.begin(subtransactions=True):
+        with context.session.begin(subtransactions=True, nested=False):
             return obj_db_api.delete_objects(
                 context, cls.db_model, **cls.modify_fields_to_db(kwargs))
 

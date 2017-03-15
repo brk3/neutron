@@ -211,12 +211,22 @@ def get_writer_session():
 @contextlib.contextmanager
 def autonested_transaction(sess):
     """This is a convenience method to not bother with 'nested' parameter."""
-    if sess.is_active:
-        session_context = sess.begin(nested=True)
+    # If we are using MySQL Cluster (NDB), disable nesting.
+    if ndb.ndb_status(sess.get_bind()):
+        try:
+            session_context = sess.begin(subtransactions=True, nested=False)
+        except exc.InvalidRequestError:
+            session_context = sess.begin(subtransactions=False, nested=False)
+        finally:
+            with session_context as tx:
+                yield tx
     else:
-        session_context = sess.begin(subtransactions=True)
-    with session_context as tx:
-        yield tx
+        if sess.is_active:
+            session_context = sess.begin(nested=True)
+        else:
+            session_context = sess.begin(subtransactions=True)
+        with session_context as tx:
+            yield tx
 
 
 _REGISTERED_SQLA_EVENTS = []
