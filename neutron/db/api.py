@@ -24,6 +24,7 @@ from neutron_lib.objects import exceptions as obj_exc
 from oslo_config import cfg
 from oslo_db import api as oslo_db_api
 from oslo_db import exception as db_exc
+from oslo_db.sqlalchemy import ndb
 from oslo_log import log as logging
 from oslo_utils import excutils
 from osprofiler import opts as profiler_opts

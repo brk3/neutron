@@ -35,7 +35,7 @@ class Agent(model_base.BASEV2, model_base.HasId):
     agent_type = sa.Column(String(255, mysql_ndb_length=128), nullable=False)
     binary = sa.Column(String(255, mysql_ndb_type=TINYTEXT), nullable=False)
     # TOPIC is a fanout exchange topic
-    topic = sa.Column(String(255), mysql_ndb_type=TINYTEXT, nullable=False)
+    topic = sa.Column(String(255, mysql_ndb_type=TINYTEXT), nullable=False)
     # TOPIC.host is a target topic
     host = sa.Column(sa.String(255), nullable=False)
     availability_zone = sa.Column(sa.String(255))

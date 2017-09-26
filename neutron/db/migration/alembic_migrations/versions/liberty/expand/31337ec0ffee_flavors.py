@@ -50,7 +50,7 @@ def upgrade():
         sa.Column('driver', sa.String(1024), nullable=False),
         sa.Column('enabled', sa.Boolean, nullable=False,
                   server_default=sa.sql.true()),
-        sa.Column('metainfo', String(4096, ndb_mysql_type=TEXT)),
+        sa.Column('metainfo', String(4096, mysql_ndb_type=TEXT)),
         sa.PrimaryKeyConstraint('id')
     )
 
